@@ -47,6 +47,8 @@ struct SidebarView: View {
             Divider()
             list
         }
+        .onAppear { expandActiveRequest() }
+        .onChange(of: store.activeTabID) { _, _ in expandActiveRequest() }
         .sheet(item: $settingsCollection) { collection in
             CollectionSettingsView(collection: collection)
                 .environment(store)
@@ -285,6 +287,18 @@ struct SidebarView: View {
     }
 
     // MARK: - Genişleme durumu (arama sırasında zorla açık)
+
+    /// Aktif sekmedeki isteğin ait olduğu koleksiyonu (ve varsa kategorisini) açık yapar.
+    private func expandActiveRequest() {
+        guard let draft = store.activeTab?.draft else { return }
+        if let collectionID = draft.collectionID {
+            expandedCollections.insert(collectionID)
+        }
+        let category = draft.category.trimmingCharacters(in: .whitespaces)
+        if !category.isEmpty {
+            expandedCategories.insert(category)
+        }
+    }
 
     private func collectionExpansion(_ collection: RequestCollection) -> Binding<Bool> {
         let id = collection.id ?? UUID()
