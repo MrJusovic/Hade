@@ -110,3 +110,7 @@ Katkılar memnuniyetle karşılanır. Lütfen [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## 📄 Lisans
 [MIT](LICENSE) — özgürce kullanın, değiştirin ve dağıtın.
+
+---
+
+<sub>Bu proje [Claude](https://claude.com/claude-code) ile desteklenerek geliştirilmiştir.</sub>
