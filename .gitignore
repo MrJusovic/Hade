@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Xcode kullanıcıya özel dosyalar
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# Derleme çıktıları
+build/
+DerivedData/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Dağıtım
+*.dmg
+Hade/Products/
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# CocoaPods / Carthage (kullanılıyorsa)
+Pods/
+Carthage/Build/

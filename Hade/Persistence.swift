@@ -14,10 +14,32 @@ struct PersistenceController {
     static let preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-        for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-        }
+
+        // Örnek bir koleksiyon ve istek ile önizlemeyi doldur.
+        let collection = RequestCollection(context: viewContext)
+        collection.id = UUID()
+        collection.name = "Örnek Koleksiyon"
+        collection.createdAt = Date()
+        collection.sortIndex = 0
+
+        let request = SavedRequest(context: viewContext)
+        request.id = UUID()
+        request.name = "Kullanıcıları listele"
+        request.method = "GET"
+        request.urlString = "https://jsonplaceholder.typicode.com/users"
+        request.bodyType = "none"
+        request.createdAt = Date()
+        request.updatedAt = Date()
+        request.sortIndex = 0
+        request.collection = collection
+
+        let env = AppEnvironment(context: viewContext)
+        env.id = UUID()
+        env.name = "Geliştirme"
+        env.isActive = true
+        env.createdAt = Date()
+        env.variablesJSON = #"[{"key":"baseUrl","value":"https://jsonplaceholder.typicode.com","enabled":true}]"#
+
         do {
             try viewContext.save()
         } catch {
@@ -31,8 +53,22 @@ struct PersistenceController {
 
     let container: NSPersistentContainer
 
+    /// Modeli yalnızca bir kez yükle ve tüm container'larda paylaş.
+    ///
+    /// Aksi halde (özellikle SwiftUI Preview'larında) model birden çok kez
+    /// yüklenir; aynı NSManagedObject alt sınıfını birden fazla entity sahiplenir
+    /// ve `Entity.entity()` `nil` döner. Bu da `@FetchRequest`'in nil entity'li
+    /// bir fetch çalıştırıp exception fırlatmasına ve uygulamanın çökmesine yol açar.
+    private static let managedObjectModel: NSManagedObjectModel = {
+        guard let url = Bundle.main.url(forResource: "Hade", withExtension: "momd"),
+              let model = NSManagedObjectModel(contentsOf: url) else {
+            fatalError("Hade.momd Core Data modeli bulunamadı.")
+        }
+        return model
+    }()
+
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "Hade")
+        container = NSPersistentContainer(name: "Hade", managedObjectModel: Self.managedObjectModel)
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
