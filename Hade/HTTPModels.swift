@@ -2,7 +2,7 @@
 //  HTTPModels.swift
 //  Hade
 //
-//  API benzeri istek/yanıt için çekirdek veri tipleri.
+//  İstek/yanıt için çekirdek veri tipleri.
 //
 
 import Foundation

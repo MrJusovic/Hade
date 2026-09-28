@@ -24,7 +24,7 @@ struct AboutView: View {
                 .font(.callout)
                 .foregroundStyle(.secondary)
 
-            Text("Hade, API benzeri açık kaynaklı bir HTTP istemcisidir. Tamamen ücretsizdir — herhangi bir ücret talep edilmez, reklam veya takip içermez.")
+            Text("Hade, açık kaynaklı bir macOS HTTP istemcisidir. Tamamen ücretsizdir — herhangi bir ücret talep edilmez, reklam veya takip içermez.")
                 .font(.callout)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)

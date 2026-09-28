@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  Hade
 //
-//  API benzeri ana ekran: kenar çubuğu + istek editörü + yanıt paneli.
+//  Ana ekran: kenar çubuğu + istek editörü + yanıt paneli.
 //
 
 import SwiftUI

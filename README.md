@@ -1,10 +1,10 @@
 # Hade
 
-**API benzeri, açık kaynaklı ve tamamen ücretsiz bir macOS HTTP istemcisi.**
+**Açık kaynaklı ve tamamen ücretsiz bir macOS HTTP & REST API istemcisi.**
 
 Hade; SwiftUI ile yazılmış, native bir macOS uygulamasıdır. İstek oluşturmak, koleksiyonlar halinde düzenlemek, ortam değişkenleri kullanmak ve OpenAPI/Swagger dokümanlarını içe aktarmak için tasarlanmıştır. Reklam yok, takip yok, ücret yok.
 
-> API/API gibi araçlara sade, hızlı ve yerel bir alternatif.
+> Sade, hızlı ve yerel bir API test aracı.
 
 ---
 

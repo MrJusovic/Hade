@@ -80,7 +80,7 @@ jobs:
           body: |
             ## Hade ${{ github.event.inputs.tag }}
 
-            API benzeri, açık kaynaklı ve ücretsiz macOS HTTP istemcisi.
+            Açık kaynaklı ve ücretsiz macOS HTTP istemcisi.
 
             **Kurulum:** `Hade.dmg` dosyasını indirin, açın ve **Hade**'yi `Applications` klasörüne sürükleyin.
             İlk açılışta Gatekeeper uyarısı çıkarsa uygulamaya sağ tıklayıp **Aç** deyin (imzasız yapı).
