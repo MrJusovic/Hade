@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-dmg:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Xcode sürümü
+        run: xcodebuild -version
+
+      - name: Uygulamayı derle (imzasız)
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project Hade.xcodeproj \
+            -target Hade \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ENABLE_HARDENED_RUNTIME=NO \
+            build
+
+      - name: create-dmg kur
+        run: brew install create-dmg
+
+      - name: DMG oluştur (sürükle-bırak kurulum)
+        run: |
+          set -uo pipefail
+          APP="build/Build/Products/Release/Hade.app"
+          test -d "$APP" || { echo "Uygulama bulunamadı: $APP"; exit 1; }
+          # Ad-hoc imza (Gatekeeper uyarısını azaltır)
+          codesign --force --deep --sign - "$APP" || true
+
+          SRC="$(mktemp -d)"
+          cp -R "$APP" "$SRC/"
+
+          # Klasik "uygulamayı Applications'a sürükle" düzeni.
+          if create-dmg \
+              --volname "Hade" \
+              --window-pos 200 120 \
+              --window-size 600 380 \
+              --icon-size 120 \
+              --icon "Hade.app" 160 190 \
+              --app-drop-link 440 190 \
+              --no-internet-enable \
+              "Hade.dmg" "$SRC"; then
+            echo "create-dmg ile üretildi."
+          else
+            echo "create-dmg başarısız; düz hdiutil'e geçiliyor."
+            rm -f Hade.dmg
+            ln -s /Applications "$SRC/Applications"
+            hdiutil create -volname "Hade" -srcfolder "$SRC" -ov -format UDZO "Hade.dmg"
+          fi
+          test -f Hade.dmg
+
+      - name: Release yayınla
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Hade.dmg
+          generate_release_notes: true
+          body: |
+            ## Hade ${{ github.ref_name }}
+
+            API benzeri, açık kaynaklı ve ücretsiz macOS HTTP istemcisi.
+
+            **Kurulum:** `Hade.dmg` dosyasını indirin, açın ve **Hade**'yi `Applications` klasörüne sürükleyin.
+            İlk açılışta Gatekeeper uyarısı çıkarsa uygulamaya sağ tıklayıp **Aç** deyin (imzasız yapı).

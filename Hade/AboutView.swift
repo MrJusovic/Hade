@@ -50,12 +50,20 @@ struct AboutView: View {
 
     private var appIcon: some View {
         Group {
-            if let icon = NSApp.applicationIconImage {
+            if let icon = loadedIcon {
                 Image(nsImage: icon).resizable()
             } else {
                 Image(systemName: "paperplane.circle.fill").resizable().foregroundStyle(.tint)
             }
         }
+    }
+
+    /// Uygulama ikonunu önce asset katalogdan, sonra çalışan uygulamanın ikonundan dener.
+    private var loadedIcon: NSImage? {
+        if let named = NSImage(named: "AppIcon") { return named }
+        let appIcon = NSApp.applicationIconImage
+        if let appIcon, appIcon.size.width > 1 { return appIcon }
+        return nil
     }
 
     @ViewBuilder
