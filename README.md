@@ -8,6 +8,18 @@ Hade; SwiftUI ile yazılmış, native bir macOS uygulamasıdır. İstek oluştur
 
 ---
 
+## 📸 Ekran Görüntüleri
+
+![Hade genel görünüm](docs/screenshot-main.png)
+
+| Koleksiyon ayarları ve değişkenler | Hakkında |
+| :---: | :---: |
+| ![Koleksiyon ayarları](docs/screenshot-collection.png) | ![Hakkında](docs/screenshot-about.png) |
+
+<sub>Görseller, Swagger Petstore örnek dokümanı içe aktarılarak oluşturulmuştur.</sub>
+
+---
+
 ## ✨ Özellikler
 
 ### İstek & Yanıt
