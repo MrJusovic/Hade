@@ -65,7 +65,7 @@ Hade; SwiftUI ile yazılmış, native bir macOS uygulamasıdır. İstek oluştur
 
 ### Kaynaktan derleme
 ```bash
-git clone https://github.com/mrjusovic/Hade.git
+git clone https://github.com/MrJusovic/Hade.git
 cd Hade
 open Hade.xcodeproj
 ```

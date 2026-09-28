@@ -12,7 +12,7 @@ enum AppInfo {
 
     // MARK: - GitHub deposu
     // NOT: Kendi deponuza göre güncelleyin.
-    static let repoOwner = "mrjusovic"
+    static let repoOwner = "MrJusovic"
     static let repoName = "Hade"
 
     static var repoURL: URL {
