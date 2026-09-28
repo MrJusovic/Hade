@@ -1,9 +1,13 @@
-name: Release
+name: Release (imzasız — yedek)
 
+# Sürümler normalde yerelde imzalanıp yayınlanır (scripts/release.sh).
+# Bu workflow yalnızca elle tetiklenir ve İMZASIZ bir DMG üretir.
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Yayınlanacak tag (ör. v1.0.1)"
+        required: true
 
 permissions:
   contents: write
@@ -14,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag }}
 
       - name: Show Xcode sürümü
         run: xcodebuild -version
@@ -69,9 +75,10 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: Hade.dmg
+          tag_name: ${{ github.event.inputs.tag }}
           generate_release_notes: true
           body: |
-            ## Hade ${{ github.ref_name }}
+            ## Hade ${{ github.event.inputs.tag }}
 
             API benzeri, açık kaynaklı ve ücretsiz macOS HTTP istemcisi.
 

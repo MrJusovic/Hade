@@ -93,6 +93,18 @@ Xcode'da **⌘R** ile çalıştırın. Gereksinim: macOS 26+, Xcode 26+.
 
 ---
 
+## 🏷️ Sürüm çıkarma (bakımcılar için)
+Sürümler **yerelde** imzalanıp notarize edilir; sertifika buluta yüklenmez.
+```bash
+# Bir kereye mahsus notarizasyon kimliği:
+xcrun notarytool store-credentials "hade-notary" \
+  --apple-id "APPLE_ID" --team-id "RH4R52HACH" --password "APP_SPECIFIC_PASSWORD"
+
+# Sürüm:
+scripts/release.sh 1.0.1
+```
+Script; archive → Developer ID imzalama → notarizasyon → DMG → GitHub release adımlarını yapar. (`.github/workflows/release.yml` yalnızca elle tetiklenen, **imzasız** bir yedektir.)
+
 ## 🤝 Katkı
 Katkılar memnuniyetle karşılanır. Lütfen [CONTRIBUTING.md](CONTRIBUTING.md) dosyasına göz atın.
 
