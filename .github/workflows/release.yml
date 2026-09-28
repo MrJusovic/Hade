@@ -25,7 +25,7 @@ jobs:
             -project Hade.xcodeproj \
             -target Hade \
             -configuration Release \
-            -derivedDataPath build \
+            CONFIGURATION_BUILD_DIR="$PWD/out" \
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
@@ -38,7 +38,7 @@ jobs:
       - name: DMG oluştur (sürükle-bırak kurulum)
         run: |
           set -uo pipefail
-          APP="build/Build/Products/Release/Hade.app"
+          APP="out/Hade.app"
           test -d "$APP" || { echo "Uygulama bulunamadı: $APP"; exit 1; }
           # Ad-hoc imza (Gatekeeper uyarısını azaltır)
           codesign --force --deep --sign - "$APP" || true
