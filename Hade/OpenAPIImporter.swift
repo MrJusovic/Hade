@@ -121,7 +121,8 @@ struct OpenAPIImporter {
                     bodyKind: bodyKind,
                     bodyText: bodyText,
                     category: category,
-                    requiresAuth: requiresAuth
+                    requiresAuth: requiresAuth,
+                    docs: buildDocs(operation: operation, params: params, method: httpMethod, path: path)
                 ))
             }
         }
@@ -216,6 +217,64 @@ struct OpenAPIImporter {
             return prettyJSON(from: sample)
         }
         return "{\n\n}"
+    }
+
+    /// Operasyondan Bilgi sekmesi için markdown doküman üretir.
+    private static func buildDocs(operation: [String: Any], params: [[String: Any]], method: HTTPMethod, path: String) -> String {
+        var lines: [String] = []
+        lines.append("**\(method.rawValue) \(path)**")
+
+        if let summary = operation["summary"] as? String,
+           !summary.trimmingCharacters(in: .whitespaces).isEmpty {
+            lines.append("")
+            lines.append(summary)
+        }
+        if let description = operation["description"] as? String,
+           !description.trimmingCharacters(in: .whitespaces).isEmpty {
+            lines.append("")
+            lines.append(description)
+        }
+
+        // Parametreler
+        let docParams = params.filter { p in
+            let inValue = p["in"] as? String
+            return inValue == "query" || inValue == "header" || inValue == "path"
+        }
+        if !docParams.isEmpty {
+            lines.append("")
+            lines.append("**Parametreler**")
+            for p in docParams {
+                let name = (p["name"] as? String) ?? "?"
+                let inValue = (p["in"] as? String) ?? ""
+                let required = (p["required"] as? Bool) ?? false
+                let desc = (p["description"] as? String) ?? ""
+                var line = "- `\(name)` (\(inValue)\(required ? ", zorunlu" : ""))"
+                if !desc.trimmingCharacters(in: .whitespaces).isEmpty { line += " — \(desc)" }
+                lines.append(line)
+            }
+        }
+
+        // İstek gövdesi açıklaması
+        if let requestBody = operation["requestBody"] as? [String: Any],
+           let desc = requestBody["description"] as? String,
+           !desc.trimmingCharacters(in: .whitespaces).isEmpty {
+            lines.append("")
+            lines.append("**Gövde**")
+            lines.append(desc)
+        }
+
+        // Yanıtlar
+        if let responses = operation["responses"] as? [String: Any], !responses.isEmpty {
+            lines.append("")
+            lines.append("**Yanıtlar**")
+            for code in responses.keys.sorted() {
+                let info = responses[code] as? [String: Any]
+                let desc = (info?["description"] as? String) ?? ""
+                lines.append("- `\(code)`\(desc.isEmpty ? "" : " — \(desc)")")
+            }
+        }
+
+        return lines.joined(separator: "\n")
     }
 
     // MARK: - Şemadan örnek üretimi

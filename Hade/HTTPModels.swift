@@ -129,6 +129,8 @@ struct RequestDraft: Codable, Equatable, Identifiable {
     var category: String
     /// İstek kimlik doğrulama (Authorization) gerektiriyor mu? (OpenAPI security)
     var requiresAuth: Bool
+    /// İçe aktarılan dokümandan gelen endpoint açıklaması (markdown).
+    var docs: String
 
     init(
         id: UUID = UUID(),
@@ -143,7 +145,8 @@ struct RequestDraft: Codable, Equatable, Identifiable {
         scriptText: String = "",
         collectionID: UUID? = nil,
         category: String = "",
-        requiresAuth: Bool = false
+        requiresAuth: Bool = false,
+        docs: String = ""
     ) {
         self.id = id
         self.name = name
@@ -158,6 +161,7 @@ struct RequestDraft: Codable, Equatable, Identifiable {
         self.collectionID = collectionID
         self.category = category
         self.requiresAuth = requiresAuth
+        self.docs = docs
     }
 
     // Geçmişteki eski kayıtlarda yeni alanlar bulunmayabilir; eksikse varsayılan kullan.
@@ -176,6 +180,7 @@ struct RequestDraft: Codable, Equatable, Identifiable {
         collectionID = try c.decodeIfPresent(UUID.self, forKey: .collectionID)
         category = try c.decodeIfPresent(String.self, forKey: .category) ?? ""
         requiresAuth = try c.decodeIfPresent(Bool.self, forKey: .requiresAuth) ?? false
+        docs = try c.decodeIfPresent(String.self, forKey: .docs) ?? ""
     }
 }
 

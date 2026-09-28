@@ -26,6 +26,7 @@ struct RequestEditorView: View {
         case headers = "Header"
         case body = "Gövde"
         case script = "Script"
+        case info = "Bilgi"
         var id: String { rawValue }
     }
 
@@ -239,6 +240,9 @@ struct RequestEditorView: View {
         case .script:
             return store.draft.scriptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                 ? tab.rawValue : "\(tab.rawValue) •"
+        case .info:
+            return store.draft.docs.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                ? tab.rawValue : "\(tab.rawValue) •"
         }
     }
 
@@ -254,6 +258,42 @@ struct RequestEditorView: View {
             bodyEditor
         case .script:
             scriptEditor
+        case .info:
+            infoView
+        }
+    }
+
+    private var infoView: some View {
+        let docs = store.draft.docs.trimmingCharacters(in: .whitespacesAndNewlines)
+        return Group {
+            if docs.isEmpty {
+                VStack {
+                    Spacer()
+                    ContentUnavailableView(
+                        "Doküman yok",
+                        systemImage: "doc.text",
+                        description: Text("Bu istek için içe aktarılmış bir açıklama bulunmuyor. OpenAPI/Swagger dokümanından gelen isteklerde endpoint açıklamaları burada görünür.")
+                    )
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(Array(store.draft.docs.split(separator: "\n", omittingEmptySubsequences: false).enumerated()), id: \.offset) { _, raw in
+                            let line = String(raw)
+                            if line.isEmpty {
+                                Spacer().frame(height: 4)
+                            } else {
+                                Text((try? AttributedString(markdown: line)) ?? AttributedString(line))
+                                    .textSelection(.enabled)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+                    }
+                    .padding(12)
+                }
+            }
         }
     }
 

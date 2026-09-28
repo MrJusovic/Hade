@@ -317,7 +317,8 @@ final class AppStore {
             scriptText: saved.scriptText ?? "",
             collectionID: saved.collection?.id,
             category: saved.category ?? "",
-            requiresAuth: saved.requiresAuth
+            requiresAuth: saved.requiresAuth,
+            docs: saved.docsMarkdown ?? ""
         )
     }
 
@@ -361,6 +362,7 @@ final class AppStore {
         saved.scriptText = draft.scriptText
         saved.category = draft.category
         saved.requiresAuth = draft.requiresAuth
+        saved.docsMarkdown = draft.docs
         saved.updatedAt = Date()
     }
 
