@@ -47,9 +47,11 @@ ARCHIVE="$WORK/Hade.xcarchive"
 EXPORT="$WORK/export"
 DMG="Hade-$VERSION.dmg"
 
-echo "▶︎ (1/6) Archive…"
+echo "▶︎ (1/6) Archive (sürüm $VERSION)…"
 xcodebuild -project "$PROJECT" -scheme "$SCHEME" -configuration Release \
-  -archivePath "$ARCHIVE" archive
+  -archivePath "$ARCHIVE" \
+  MARKETING_VERSION="$VERSION" \
+  archive
 
 echo "▶︎ (2/6) Export (Developer ID, hardened runtime)…"
 cat > "$WORK/ExportOptions.plist" <<PLIST

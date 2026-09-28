@@ -178,12 +178,16 @@ final class AppStore {
         }
     }
 
-    /// Koleksiyonun `authorization` tipli, etkin ve dolu değişkeninin değeri.
+    /// Koleksiyonun Authorization değerini döndürür.
+    /// Tipi `.authorization` OLAN ya da adı "authorization" olan; etkin ve dolu ilk değişken.
     private func collectionAuthorizationValue(for draft: RequestDraft) -> String? {
         guard let id = draft.collectionID, let collection = collection(with: id) else { return nil }
         let vars = Self.decodeKeyValues(collection.variablesJSON)
-        return vars.first(where: {
-            $0.type == .authorization && $0.enabled && !$0.value.trimmingCharacters(in: .whitespaces).isEmpty
+        return vars.first(where: { item in
+            guard item.enabled,
+                  !item.value.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
+            return item.type == .authorization
+                || item.key.trimmingCharacters(in: .whitespaces).lowercased() == "authorization"
         })?.value
     }
 
