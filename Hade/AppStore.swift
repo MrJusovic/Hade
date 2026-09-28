@@ -565,11 +565,14 @@ final class AppStore {
     }
 
     func clearHistory() {
-        let request: NSFetchRequest<NSFetchRequestResult> = HistoryEntry.fetchRequest()
-        let delete = NSBatchDeleteRequest(fetchRequest: request)
-        _ = try? context.execute(delete)
-        // Batch silme bağlamı otomatik güncellemez; nesneleri yenile.
-        context.refreshAllObjects()
+        // Nesne düzeyinde sil ki @FetchRequest (sidebar listesi) anında güncellensin.
+        let request = HistoryEntry.fetchRequest()
+        if let items = try? context.fetch(request) {
+            for item in items {
+                context.delete(item)
+            }
+        }
+        persist()
     }
 
     func delete(_ entry: HistoryEntry) {
