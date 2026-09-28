@@ -98,7 +98,7 @@ Sürümler **yerelde** imzalanıp notarize edilir; sertifika buluta yüklenmez.
 ```bash
 # Bir kereye mahsus notarizasyon kimliği:
 xcrun notarytool store-credentials "hade-notary" \
-  --apple-id "APPLE_ID" --team-id "RH4R52HACH" --password "APP_SPECIFIC_PASSWORD"
+  --apple-id "APPLE_ID" --team-id "YOUR_TEAM_ID" --password "APP_SPECIFIC_PASSWORD"
 
 # Sürüm:
 scripts/release.sh 1.0.1

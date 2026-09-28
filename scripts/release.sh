@@ -9,7 +9,7 @@
 #
 # Bir kereye mahsus kurulum (notarizasyon kimliği):
 #   xcrun notarytool store-credentials "hade-notary" \
-#       --apple-id "APPLE_ID_MAIL" --team-id "RH4R52HACH" \
+#       --apple-id "APPLE_ID_MAIL" --team-id "YOUR_TEAM_ID" \
 #       --password "UYGULAMAYA_OZEL_SIFRE"
 #   (App-specific password: https://account.apple.com ▸ Giriş & Güvenlik)
 #
@@ -30,8 +30,17 @@ cd "$(dirname "$0")/.."
 
 PROJECT="Hade.xcodeproj"
 SCHEME="${SCHEME:-Hade}"
-TEAM_ID="${TEAM_ID:-RH4R52HACH}"
 NOTARY_PROFILE="${NOTARY_PROFILE:-hade-notary}"
+
+# Team ID: env ile verilebilir; verilmezse Developer ID sertifikasından otomatik bulunur.
+TEAM_ID="${TEAM_ID:-$(security find-identity -v -p codesigning \
+  | grep -m1 'Developer ID Application' \
+  | grep -oE '\([A-Z0-9]{10}\)' | tr -d '()')}"
+if [[ -z "$TEAM_ID" ]]; then
+  echo "Team ID bulunamadı. 'Developer ID Application' sertifikanızın kurulu olduğundan emin olun"
+  echo "veya TEAM_ID=XXXXXXXXXX scripts/release.sh $VERSION şeklinde verin."
+  exit 1
+fi
 
 WORK="$(mktemp -d)"
 ARCHIVE="$WORK/Hade.xcarchive"
