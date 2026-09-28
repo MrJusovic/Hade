@@ -153,6 +153,18 @@ final class AppStore {
         }
     }
 
+    /// Bu istek gönderilirken otomatik eklenecek Authorization değerini önizler (varsa).
+    /// Header sekmesinde bilgi amaçlı göstermek için kullanılır.
+    func autoAuthorizationPreview(for draft: RequestDraft) -> String? {
+        let hasExplicit = draft.headers.contains {
+            $0.enabled
+                && $0.key.trimmingCharacters(in: .whitespaces).lowercased() == "authorization"
+                && !$0.value.trimmingCharacters(in: .whitespaces).isEmpty
+        }
+        if hasExplicit { return nil }
+        return collectionAuthorizationValue(for: draft)
+    }
+
     /// İsteğin ait olduğu koleksiyonda `authorization` tipli, dolu bir değişken varsa,
     /// bunu Authorization header'ı olarak uygular. Boş bir Authorization header'ı varsa
     /// (ör. içe aktarımdan gelen) onu doldurur; yoksa yeni header ekler. Kullanıcının
@@ -178,17 +190,27 @@ final class AppStore {
         }
     }
 
-    /// Koleksiyonun Authorization değerini döndürür.
-    /// Tipi `.authorization` OLAN ya da adı "authorization" olan; etkin ve dolu ilk değişken.
+    /// Authorization değerini bulur: önce isteğin koleksiyonundan, yoksa aktif ortamdan.
+    /// Ölçüt: tipi `.authorization` OLAN ya da adı "authorization" olan; etkin ve dolu değişken.
     private func collectionAuthorizationValue(for draft: RequestDraft) -> String? {
-        guard let id = draft.collectionID, let collection = collection(with: id) else { return nil }
-        let vars = Self.decodeKeyValues(collection.variablesJSON)
-        return vars.first(where: { item in
-            guard item.enabled,
-                  !item.value.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
-            return item.type == .authorization
-                || item.key.trimmingCharacters(in: .whitespaces).lowercased() == "authorization"
-        })?.value
+        func pick(_ items: [KeyValue]) -> String? {
+            items.first(where: { item in
+                guard item.enabled,
+                      !item.value.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
+                return item.type == .authorization
+                    || item.key.trimmingCharacters(in: .whitespaces).lowercased() == "authorization"
+            })?.value
+        }
+        // 1. İsteğin ait olduğu koleksiyon
+        if let id = draft.collectionID, let collection = collection(with: id),
+           let value = pick(Self.decodeKeyValues(collection.variablesJSON)) {
+            return value
+        }
+        // 2. Aktif ortam (koleksiyona bağlı olmayan istekler için yedek)
+        if let env = activeEnvironment(), let value = pick(Self.decodeKeyValues(env.variablesJSON)) {
+            return value
+        }
+        return nil
     }
 
     /// Sekmedeki istekte bir post-response script varsa çalıştırır ve değişkenleri uygular.

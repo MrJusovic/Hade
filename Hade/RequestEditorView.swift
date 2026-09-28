@@ -249,6 +249,36 @@ struct RequestEditorView: View {
         case .params:
             KeyValueEditorView(items: $store.draft.queryItems, keyPlaceholder: "Parametre", valuePlaceholder: "Değer")
         case .headers:
+            headersTab
+        case .body:
+            bodyEditor
+        case .script:
+            scriptEditor
+        }
+    }
+
+    private var headersTab: some View {
+        @Bindable var store = store
+        return VStack(spacing: 0) {
+            if let auth = store.autoAuthorizationPreview(for: store.draft) {
+                HStack(spacing: 6) {
+                    Image(systemName: "lock.fill").foregroundStyle(.orange)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Otomatik Authorization gönderilecek")
+                            .font(.caption.weight(.semibold))
+                        Text(auth)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .textSelection(.enabled)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(.orange.opacity(0.12))
+            }
             KeyValueEditorView(
                 items: $store.draft.headers,
                 keyPlaceholder: "Header",
@@ -256,10 +286,6 @@ struct RequestEditorView: View {
                 keySuggestions: HTTPHeaderCatalog.standard,
                 valueSuggestions: { HTTPHeaderCatalog.values(for: $0) }
             )
-        case .body:
-            bodyEditor
-        case .script:
-            scriptEditor
         }
     }
 
